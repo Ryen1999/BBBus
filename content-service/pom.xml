@@ -85,6 +85,12 @@
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
         </dependency>
+
+        <!-- Sentinel 流量防护 -->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
+        </dependency>
         <!-- Added: Spring Cloud LoadBalancer -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
