@@ -18,13 +18,19 @@ spring:
         #namespace: 7e1f4523-af8b-48ab-9ec2-368a30db92ee # nacos命名空间
         #group: DEFAULT_GROUP  # nacos命名空间id
         #cluster-name: NJ      # nacos集群名称
+    sentinel:
+      transport:
+        dashboard: 127.0.0.1:8858
 
 # mybatis 扫描配置
 mybatis:
   mapper-locations: classpath:mapper/*.xml
   type-aliases-package: com.example.userservice.dto
 
-
 stock:
   service:
     url: http://47.122.87.219:8100
+
+feign:
+  sentinel:
+    enabled: true
