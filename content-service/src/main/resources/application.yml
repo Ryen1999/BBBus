@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 8081
 spring:
   application:
     # 服务名称
@@ -18,6 +18,13 @@ spring:
         #namespace: 7e1f4523-af8b-48ab-9ec2-368a30db92ee # nacos命名空间
         #group: DEFAULT_GROUP  # nacos命名空间id
         #cluster-name: NJ      # nacos集群名称
+    #sentinel控制台
+    sentinel:
+      transport:
+        port: 8719
+        dashboard: localhost:8080
+      filter:
+        enabled: false
 
 # mybatis 扫描配置
 mybatis:
@@ -28,3 +35,15 @@ mybatis:
 stock:
   service:
     url: http://47.122.87.219:8100
+
+
+# Feign 客户端 Sentinel 熔断降级配置
+# 用于在微服务调用失败、超时或限流时提供降级处理，增强系统容错能力
+feign:
+  sentinel:
+    # 启用 Feign 客户端的 Sentinel 支持
+    # 开启后，Feign 调用会被 Sentinel 监控和保护，支持熔断、限流、降级等功能
+    enabled: true
+    # 允许 Feign 接口返回 Future 类型（如 CompletableFuture）
+    # 当 Feign 接口方法返回异步类型时，需要开启此配置才能正常使用 Sentinel 保护
+    allow-future-bean: true
