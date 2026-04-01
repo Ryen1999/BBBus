@@ -2,13 +2,13 @@ package com.bbbus.contentservice.controller;
 
 import com.alibaba.csp.sentinel.Entry;
 import com.alibaba.csp.sentinel.SphU;
-import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.alibaba.csp.sentinel.slots.block.BlockException;
 import com.bbbus.contentservice.client.StockFeignClient;
 import com.bbbus.contentservice.service.TestService;
 import com.example.user.api.dto.UserInfoResDTO;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,82 +16,85 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Slf4j
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/shares")
 public class TestController {
-	
-	@Autowired
-	private DiscoveryClient discoveryClient;
-	
-	@Autowired
-	private StockFeignClient stockFeignClient;
-	
-	@Autowired
-	private RestTemplate restTemplate;
 
-	@Autowired
-	private TestService testService;
-	
-	@GetMapping("/test")
-	public List query() {
-		List list = new ArrayList();
-		list.add(discoveryClient.getInstances("user-service"));
-		System.out.println("query");
-		return list;
-	}
-	@GetMapping("/list")
-	public List<UserInfoResDTO> list() {
-		List<UserInfoResDTO> list = stockFeignClient.list();
+    private static final String USER_SERVICE = "user-service";
+    private static final String USER_LIST_URL = "http://user-service/api/user/list";
+    private static final String SENTINEL_RESOURCE = "test-sentinel-api";
 
-		return list;
-	}
+    private final DiscoveryClient discoveryClient;
+    private final StockFeignClient stockFeignClient;
+    private final RestTemplate restTemplate;
+    private final TestService testService;
 
-	@GetMapping("/correlationTest")
-	public String correlationTest() throws InterruptedException {
-		String result = "";
-		for (int i = 0; i < 100; i++)
-		{
-			 result = restTemplate.getForObject("http://user-service/api/user/list", String.class);
-			Thread.sleep(100);
-		}
-		return result;
-	}
+    @GetMapping("/test")
+    public List<ServiceInstance> query() {
+        List<ServiceInstance> instances = discoveryClient.getInstances(USER_SERVICE);
+        log.info("discovered {} instances for {}", instances.size(), USER_SERVICE);
+        return instances;
+    }
 
-	@GetMapping("/test-a")
-	public String testA() throws InterruptedException {
-		testService.common();
-		return "test-a";
-	}
+    @GetMapping("/list")
+    public List<UserInfoResDTO> list() {
+        List<UserInfoResDTO> users = stockFeignClient.list();
+        return users == null ? Collections.emptyList() : users;
+    }
 
-	@GetMapping("/test-b")
-	public String testB() {
+    @GetMapping("/correlationTest")
+    public String correlationTest(@RequestParam(defaultValue = "100") Integer loopCount,
+                                  @RequestParam(defaultValue = "100") Long sleepMs) {
+        int safeLoopCount = Math.max(1, Math.min(loopCount, 500));
+        long safeSleepMs = Math.max(0L, Math.min(sleepMs, 1000L));
+        String result = "";
 
-		testService.common();
+        for (int i = 0; i < safeLoopCount; i++) {
+            result = restTemplate.getForObject(USER_LIST_URL, String.class);
+            if (safeSleepMs <= 0) {
+                continue;
+            }
+            try {
+                Thread.sleep(safeSleepMs);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                log.warn("correlationTest interrupted at round {}", i + 1, e);
+                break;
+            }
+        }
+        return result;
+    }
 
-		return "test-b";
+    @GetMapping("/test-a")
+    public String testA() {
+        testService.common();
+        return "test-a";
+    }
 
-	}
+    @GetMapping("/test-b")
+    public String testB() {
+        testService.common();
+        return "test-b";
+    }
 
-	@GetMapping("/test-sentinel")
-	public String testSentinelApi(@RequestParam(required = false) String a) {
-		Entry entry = null;
+    @GetMapping("/test-sentinel")
+    public String testSentinelApi(@RequestParam(required = false) String a) {
+        Entry entry = null;
         try {
-			entry = SphU.entry("test-sentinel-api");
+            entry = SphU.entry(SENTINEL_RESOURCE);
+            return a == null ? "" : a;
         } catch (BlockException e) {
-
-
-			return "限流，被降级了";
-        }finally {
-			if (entry != null) {
-				entry.exit();
-			}
-		}
-
-
-        return a;
-	}
+            log.warn("sentinel blocked for resource: {}", SENTINEL_RESOURCE, e);
+            return "限流，已降级";
+        } finally {
+            if (entry != null) {
+                entry.exit();
+            }
+        }
+    }
 }

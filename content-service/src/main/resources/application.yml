@@ -7,9 +7,9 @@ spring:
   # 数据库
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://47.122.87.219:3306/content_center?useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true&allowMultiQueries=true&useSSL=false&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://124.223.32.169:3306/content_center?useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true&allowMultiQueries=true&useSSL=false&allowPublicKeyRetrieval=true
     username: root
-    password: root
+    password: 15151112063Gw
   # nacos注册中心
   cloud:
     nacos:
@@ -47,3 +47,17 @@ feign:
     # 允许 Feign 接口返回 Future 类型（如 CompletableFuture）
     # 当 Feign 接口方法返回异步类型时，需要开启此配置才能正常使用 Sentinel 保护
     allow-future-bean: true
+
+# RocketMQ 配置
+rocketmq:
+  #RocketMQ NameServer 地址
+  name-server: 124.223.32.169:9876
+  producer:
+    #生产者组名称，设置为服务名
+    group: content-service-producer
+    #消息发送超时时间，3 秒
+    send-message-timeout: 10000
+    #发送失败时的重试次数
+    retry-times-when-send-failed: 2
+    #异步发送失败时的重试次数
+    retry-times-when-send-async-failed: 2

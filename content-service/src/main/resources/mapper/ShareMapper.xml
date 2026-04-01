@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bbbus.contentservice.dao.content.ShareDao">
+
+    <update id="updateByPrimaryKeySelective"  parameterType="com.bbbus.contentservice.domain.entity.content.Share">
+            update share
+            <set>
+                <if test="auditStatus != null">
+                    audit_status = #{auditStatus},
+                </if>
+            </set>
+
+            where id = #{userId}
+    </update>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultType="com.bbbus.contentservice.domain.entity.content.Share">
+        select id as userId, audit_status as auditStatus
+        from share
+        where id = #{id}
+    </select>
+
+
+</mapper>

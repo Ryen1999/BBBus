@@ -4,4 +4,9 @@ import lombok.Data;
 
 @Data
 public class Share {
+
+    private Integer userId;
+
+    private String auditStatus;
+
 }
