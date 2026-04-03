@@ -11,4 +11,6 @@ public class Share {
 
     private String auditStatus;
 
+    private String reason;
+
 }

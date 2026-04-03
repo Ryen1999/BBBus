@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bbbus.contentservice.dao.content.RocketMQTransactionLogDao">
+    <insert id="insert">
+        insert  into rocketmq_transaction_log(id,transaction_id,log) values(#{id},#{transactionId},#{log})
+    </insert>
+    <select id="selectByTransactionId"
+            resultType="com.bbbus.contentservice.dto.messaging.RocketMQTransactionLog">
+        select id,transaction_id as transactionId,log from rocketmq_transaction_log where transaction_id = #{transactionId}
+    </select>
+</mapper>

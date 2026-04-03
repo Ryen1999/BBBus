@@ -8,6 +8,9 @@
                 <if test="auditStatus != null">
                     audit_status = #{auditStatus},
                 </if>
+                <if test="reason != null">
+                    reason = #{reason},
+                </if>
             </set>
 
             where id = #{id}
