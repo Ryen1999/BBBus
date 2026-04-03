@@ -9,7 +9,7 @@ import org.apache.ibatis.annotations.Select;
 public interface ShareDao {
 
 
-    Share selectByPrimaryKey(Integer id);
+    Share selectByPrimaryKey(String id);
 
     int updateByPrimaryKeySelective(Share record);
 

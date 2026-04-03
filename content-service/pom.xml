@@ -104,6 +104,12 @@
             <version>2.0.3</version>
         </dependency>
 
+        <!-- spring cloud stream -->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-stream-rocketmq</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -114,4 +120,6 @@
             </plugin>
         </plugins>
     </build>
+
+
 </project>

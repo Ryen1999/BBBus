@@ -10,6 +10,18 @@ spring:
     url: jdbc:mysql://124.223.32.169:3306/content_center?useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true&allowMultiQueries=true&useSSL=false&allowPublicKeyRetrieval=true
     username: root
     password: 15151112063Gw
+    # HikariCP 连接池配置
+    hikari:
+      # 连接最大生命周期（毫秒），设置为 15 分钟，比 MySQL wait_timeout 短
+      max-lifetime: 900000
+      # 连接空闲超时时间（毫秒）
+      idle-timeout: 600000
+      # 连接测试查询超时时间（毫秒）
+      connection-timeout: 30000
+      # 最小空闲连接数
+      minimum-idle: 5
+      # 最大连接数
+      maximum-pool-size: 20
   # nacos注册中心
   cloud:
     nacos:
@@ -25,6 +37,13 @@ spring:
         dashboard: localhost:8080
       filter:
         enabled: false
+#    stream:
+#      bindings:
+#        add-bonus-out:
+#          destination: add-bonus-topic   # 对应 RocketMQ 的 topic
+#      rocketmq:
+#        binder:
+#          name-server: 124.223.32.169:9876
 
 # mybatis 扫描配置
 mybatis:
@@ -34,7 +53,7 @@ mybatis:
 
 stock:
   service:
-    url: http://47.122.87.219:8100
+    url: http://124.223.32.169:8100
 
 
 # Feign 客户端 Sentinel 熔断降级配置
@@ -61,3 +80,5 @@ rocketmq:
     retry-times-when-send-failed: 2
     #异步发送失败时的重试次数
     retry-times-when-send-async-failed: 2
+    # 启用自动创建 Topic(仅开发/测试环境)
+    auto-create-topic-enable: true

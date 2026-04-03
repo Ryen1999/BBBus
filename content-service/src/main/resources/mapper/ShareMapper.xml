@@ -10,11 +10,11 @@
                 </if>
             </set>
 
-            where id = #{userId}
+            where id = #{id}
     </update>
 
-    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultType="com.bbbus.contentservice.domain.entity.content.Share">
-        select id as userId, audit_status as auditStatus
+    <select id="selectByPrimaryKey" parameterType="java.lang.String" resultType="com.bbbus.contentservice.domain.entity.content.Share">
+        select id , user_id as userId,audit_status as auditStatus
         from share
         where id = #{id}
     </select>
