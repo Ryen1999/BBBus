@@ -22,6 +22,8 @@
 
     <dependencyManagement>
         <dependencies>
+
+            <!-- 1. Spring Cloud 依赖管理 -->
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-dependencies</artifactId>
@@ -30,7 +32,7 @@
                 <scope>import</scope>
             </dependency>
 
-            <!-- spring cloud alibaba -->
+            <!-- 2. Spring Cloud Alibaba 依赖管理 -->
             <dependency>
                 <groupId>com.alibaba.cloud</groupId>
                 <artifactId>spring-cloud-alibaba-dependencies</artifactId>

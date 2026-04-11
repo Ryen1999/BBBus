@@ -11,7 +11,6 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="content-service" target="1.8" />
       <module name="stock-service-api" target="1.8" />
       <module name="stockService" target="1.8" />
     </bytecodeTargetLevel>

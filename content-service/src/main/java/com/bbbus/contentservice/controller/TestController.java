@@ -22,7 +22,7 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/shares")
+@RequestMapping("/admin/shares")
 public class TestController {
 
     private static final String USER_SERVICE = "user-service";
