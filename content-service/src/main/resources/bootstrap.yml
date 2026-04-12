@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: content-service   # 服务名，决定去 Nacos 拉哪个配置文件
+  cloud:
+    nacos:
+      config:
+        server-addr: 47.122.87.219:8848
+        namespace: 7e1f4523-af8b-48ab-9ec2-368a30db92ee
+        group: DEFAULT_GROUP
+        file-extension: yaml   # 配置文件格式，和 Nacos 控制台里保持一致
+
+        # 共享配置（多个服务复用同一份配置，如 jwt secret）
+        shared-configs:
+          - data-id: jwt-shared.yaml
+            group: DEFAULT_GROUP
+            refresh: true   # 允许动态刷新

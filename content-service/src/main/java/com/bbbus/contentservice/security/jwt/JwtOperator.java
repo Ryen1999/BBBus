@@ -6,6 +6,7 @@ import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -17,6 +18,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @SuppressWarnings("WeakerAccess")
 @Component
+@RefreshScope
 public class JwtOperator {
     /**
      * 秘钥 随便写
@@ -28,7 +30,7 @@ public class JwtOperator {
      * 有效期，单位秒
      * - 默认2周
      */
-    @Value("${jwt.expire-time-in-second}")
+    @Value("${jwt.expiration}")
     private Long expirationTimeInSecond;
 
     /**
