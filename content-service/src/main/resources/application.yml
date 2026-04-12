@@ -88,3 +88,8 @@ feign:
 #    retry-times-when-send-async-failed: 2
 #    # 启用自动创建 Topic(仅开发/测试环境)
 #    auto-create-topic-enable: true
+# 微信小程序配置
+jwt:
+  secret: suibianxiesuibianxiesuibianxiesui
+  # 有效期，单位秒，默认2周
+  expire-time-in-second: 1209600
