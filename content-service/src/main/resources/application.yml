@@ -1,0 +1,90 @@
+server:
+  port: 8081
+spring:
+  application:
+    # 服务名称
+    name: content-service
+  # 数据库
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://bbbus.cloud:3306/content_center?useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true&allowMultiQueries=true&useSSL=false&allowPublicKeyRetrieval=true
+    username: root
+    password: 15151112063Gw
+    # HikariCP 连接池配置
+    hikari:
+      # 连接最大生命周期（毫秒），设置为 15 分钟，比 MySQL wait_timeout 短
+      max-lifetime: 900000
+      # 连接空闲超时时间（毫秒）
+      idle-timeout: 600000
+      # 连接测试查询超时时间（毫秒）
+      connection-timeout: 30000
+      # 最小空闲连接数
+      minimum-idle: 5
+      # 最大连接数
+      maximum-pool-size: 20
+  # nacos注册中心
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 47.122.87.219:8848
+        namespace: 7e1f4523-af8b-48ab-9ec2-368a30db92ee # nacos命名空间
+        group: DEFAULT_GROUP  # nacos命名空间id
+        cluster-name: NJ      # nacos集群名称
+    #sentinel控制台
+#    sentinel:
+#      transport:
+#        port: 8719
+#        dashboard: localhost:8080
+#      filter:
+#        enabled: false
+    stream:
+      rocketmq:
+        binder:
+          name-server: 124.223.32.169:9876
+        bindings:
+          output:
+            producer:
+              producerType: Trans                      # ① 必须加这一行，声明为事务消息类型
+              group: tx-add-bonus-group
+              transactionListener: addBonusStreamListener  # ② Bean 名字，对应 @Component 的值
+      bindings:
+        output:
+          destination: add-bonus-topic   # 对应 RocketMQ 的 topic
+
+# mybatis 扫描配置
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.example.userservice.dto
+
+
+stock:
+  service:
+    url: http://124.223.32.169:8100
+
+
+# Feign 客户端 Sentinel 熔断降级配置
+# 用于在微服务调用失败、超时或限流时提供降级处理，增强系统容错能力
+feign:
+  sentinel:
+    # 启用 Feign 客户端的 Sentinel 支持
+    # 开启后，Feign 调用会被 Sentinel 监控和保护，支持熔断、限流、降级等功能
+    enabled: true
+    # 允许 Feign 接口返回 Future 类型（如 CompletableFuture）
+    # 当 Feign 接口方法返回异步类型时，需要开启此配置才能正常使用 Sentinel 保护
+    allow-future-bean: true
+
+# RocketMQ 配置
+#rocketmq:
+#  #RocketMQ NameServer 地址
+#  name-server: 124.223.32.169:9876
+#  producer:
+#    #生产者组名称，设置为服务名
+#    group: content-service-producer
+    #消息发送超时时间，3 秒
+#    send-message-timeout: 10000
+#    #发送失败时的重试次数
+#    retry-times-when-send-failed: 2
+#    #异步发送失败时的重试次数
+#    retry-times-when-send-async-failed: 2
+#    # 启用自动创建 Topic(仅开发/测试环境)
+#    auto-create-topic-enable: true
