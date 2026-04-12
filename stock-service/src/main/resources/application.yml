@@ -1,5 +1,0 @@
-server:
-  port: 8100
-spring:
-  application:
-    name: stock-service
