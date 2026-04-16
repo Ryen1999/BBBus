@@ -1,13 +1,16 @@
 package com.bbbus.contentservice.aop;
 
+import com.bbbus.contentservice.aop.annotation.CheckAuthorization;
 import com.bbbus.contentservice.enums.ErrorStatusEnum;
 import com.bbbus.contentservice.exception.AuthenticationException;
 import com.bbbus.contentservice.security.jwt.JwtOperator;
 import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -58,8 +61,11 @@ public class AuthCheckAspect {
 
              String role =claims.get("role").toString();
 
-            //TODO 角色权限校验 不区分大小写
-            if (!role.equalsIgnoreCase("ADMIN")) {
+            //TODO 角色权限校验 不区分大小写,比较role与CheckAuthorization的value值
+            MethodSignature methodSignature = (MethodSignature)joinPoint.getSignature();
+            CheckAuthorization checkAuthorization = methodSignature.getMethod().getAnnotation(CheckAuthorization.class);
+            String value =checkAuthorization.value();
+            if (!role.equalsIgnoreCase(value)) {
                 throw new AuthenticationException(ErrorStatusEnum.UNAUTHORIZED.getCode(),ErrorStatusEnum.UNAUTHORIZED.getMessage());
             }
 

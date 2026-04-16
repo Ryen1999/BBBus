@@ -4,6 +4,22 @@ spring:
   application:
     # 服务名称
     name: content-service
+  servlet:
+    multipart:
+      max-file-size: 500MB      # 单文件最大 500MB
+      max-request-size: 500MB   # 整个请求最大 500MB
+  sleuth:
+    sampler:
+      probability: 1.0   # 采样率 1.0=100%（开发环境全采，生产建议 0.1）
+  zipkin:
+    base-url: http://127.0.0.1:9411   # Zipkin Server 地址
+    sender:
+      type: web   # 用 HTTP 上报（简单），生产可改 kafka
+  # Elasticsearch 连接配置（对应本地 E:\GoogleDownload\elasticsearch-7.17.28，默认端口 9200）
+  elasticsearch:
+    uris: http://localhost:9200
+    connection-timeout: 5s    # 连接超时 5 秒
+    socket-timeout: 30s       # 读写超时 30 秒（全量同步时写入较慢）
   # nacos注册中心
   cloud:
     nacos:
@@ -37,6 +53,11 @@ spring:
 mybatis:
   mapper-locations: classpath:mapper/*.xml
   type-aliases-package: com.example.userservice.dto
+
+# MyBatis SQL 日志输出配置
+logging:
+  level:
+    com.bbbus.contentservice.dao.content: DEBUG
 
 
 stock:

@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.bbbus.contentservice.dao.content.ShareDao">
 
-    <update id="updateByPrimaryKeySelective"  parameterType="com.bbbus.contentservice.domain.entity.content.Share">
+    <update id="updateByPrimaryKeySelective"  parameterType="com.bbbus.contentservice.domain.entity.content.ShareDTO">
             update share
             <set>
                 <if test="auditStatus != null">
@@ -16,11 +16,121 @@
             where id = #{id}
     </update>
 
-    <select id="selectByPrimaryKey" parameterType="java.lang.String" resultType="com.bbbus.contentservice.domain.entity.content.Share">
+    <select id="selectByPrimaryKey" parameterType="java.lang.String" resultType="com.bbbus.contentservice.domain.entity.content.ShareDTO">
         select id , user_id as userId,audit_status as auditStatus
         from share
         where id = #{id}
     </select>
 
+    <!-- 分页查询分享列表 -->
+    <select id="selectShareList" resultType="com.bbbus.contentservice.domain.entity.content.ShareDTO">
+        SELECT
+            id,
+            user_id AS userId,
+            title,
+            create_time AS createTime,
+            update_time AS updateTime,
+            is_original AS isOriginal,
+            author,
+            cover,
+            summary,
+            price,
+            download_url AS downloadUrl,
+            buy_count AS buyCount,
+            show_flag AS showFlag,
+            audit_status AS auditStatus,
+            reason
+        FROM share
+        <where>
+            <if test="title != null and title != ''">
+                AND title LIKE CONCAT('%', #{title}, '%')
+            </if>
+        </where>
+        ORDER BY create_time DESC
+    </select>
+
+    <select id="selectShareListForExport" resultType="com.bbbus.contentservice.domain.entity.content.ShareDTO">
+        SELECT
+            id,
+            user_id AS userId,
+            title,
+            create_time AS createTime,
+            update_time AS updateTime,
+            is_original AS isOriginal,
+            author,
+            cover,
+            summary,
+            price,
+            download_url AS downloadUrl,
+            buy_count AS buyCount,
+            show_flag AS showFlag,
+            audit_status AS auditStatus,
+            reason
+        FROM share
+        <where>
+            <if test="title != null and title != ''">
+                AND title LIKE CONCAT('%', #{title}, '%')
+            </if>
+        </where>
+        ORDER BY create_time DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+
+    <!-- 游标分页导出，避免大offset导致的慢查询 -->
+    <select id="selectShareListForExportByCursor" resultType="com.bbbus.contentservice.domain.entity.content.ShareDTO">
+        SELECT
+            id,
+            user_id AS userId,
+            title,
+            create_time AS createTime,
+            update_time AS updateTime,
+            is_original AS isOriginal,
+            author,
+            cover,
+            summary,
+            price,
+            download_url AS downloadUrl,
+            buy_count AS buyCount,
+            show_flag AS showFlag,
+            audit_status AS auditStatus,
+            reason
+        FROM share
+        <where>
+            <if test="title != null and title != ''">
+                AND title LIKE CONCAT('%', #{title}, '%')
+            </if>
+            <if test="lastCreateTime != null">
+                AND (create_time &lt; #{lastCreateTime} 
+                     OR (create_time = #{lastCreateTime} AND id &lt; #{lastId}))
+            </if>
+        </where>
+        ORDER BY create_time DESC, id DESC
+        LIMIT #{limit}
+    </select>
+
+    <!-- 批量插入：一条 SQL 插入多行，性能远超逐行插入 -->
+    <insert id="batchInsert">
+        INSERT INTO share (id, user_id, title, create_time, update_time, is_original,
+                           author, cover, summary, price, download_url, buy_count,
+                           show_flag, audit_status, reason)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.id}, #{item.userId}, #{item.title}, #{item.createTime}, #{item.updateTime},
+             #{item.isOriginal}, #{item.author}, #{item.cover}, #{item.summary}, #{item.price},
+             #{item.downloadUrl}, #{item.buyCount}, #{item.showFlag}, #{item.auditStatus}, #{item.reason})
+        </foreach>
+    </insert>
+
+    <!-- 统计导出数据总数 -->
+    <select id="countShareListForExport" resultType="java.lang.Integer">
+        SELECT COUNT(1)
+        FROM share
+        <where>
+            <if test="title != null and title != ''">
+                AND title LIKE CONCAT('%', #{title}, '%')
+            </if>
+        </where>
+    </select>
 
 </mapper>

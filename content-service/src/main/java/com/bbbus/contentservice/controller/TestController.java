@@ -3,6 +3,7 @@ package com.bbbus.contentservice.controller;
 import com.alibaba.csp.sentinel.Entry;
 import com.alibaba.csp.sentinel.SphU;
 import com.alibaba.csp.sentinel.slots.block.BlockException;
+import com.bbbus.contentservice.aop.annotation.CheckAuthorization;
 import com.bbbus.contentservice.client.StockFeignClient;
 import com.bbbus.contentservice.service.TestService;
 import com.example.user.api.dto.UserInfoResDTO;
@@ -22,7 +23,7 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/admin/shares")
+@RequestMapping("/test")
 public class TestController {
 
     private static final String USER_SERVICE = "user-service";
@@ -41,8 +42,11 @@ public class TestController {
         return instances;
     }
 
+
     @GetMapping("/list")
+    @CheckAuthorization("user")
     public List<UserInfoResDTO> list() {
+        log.info("list users");
         List<UserInfoResDTO> users = stockFeignClient.list();
         return users == null ? Collections.emptyList() : users;
     }
@@ -98,3 +102,5 @@ public class TestController {
         }
     }
 }
+
+

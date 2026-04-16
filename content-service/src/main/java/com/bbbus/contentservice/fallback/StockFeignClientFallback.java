@@ -27,7 +27,7 @@ public class StockFeignClientFallback implements StockFeignClient {
         List list = new ArrayList();
 
         UserInfoResDTO userInfo = new UserInfoResDTO();
-        userInfo.setWx_nickname("fallback");
+        userInfo.setWxNickname("fallback");
         list.add(userInfo);
         return list;
     }
